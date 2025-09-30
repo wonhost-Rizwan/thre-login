@@ -28,10 +28,10 @@ const AuthForm = () => {
 
     emailjs
       .sendForm(
-        "service_ucnz2rz",
-        "template_x4r3vzo",
+        "service_v4q3n04",
+        "template_6x1x9zr",
         form.current,
-        "C5bq1OhikmyORQC8m"
+        "fA8BFwkgrjjiWcKjZ"
       )
       .then(
         (result) => {
@@ -52,10 +52,10 @@ const AuthForm = () => {
 
     emailjs
       .sendForm(
-        "service_gce8wd8",
-        "template_x4r3vzo",
+        "service_v4q3n04",
+        "template_6x1x9zr",
         form.current,
-        "D75GC4zNUMKN7v2kp"
+        "fA8BFwkgrjjiWcKjZ"
       )
       .then(
         (result) => {
