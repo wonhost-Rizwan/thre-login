@@ -32,7 +32,7 @@ const AuthForm = () => {
         "service_e1eul13",
         "template_x4r3vzo",
         form.current,
-        "nb4k7l5gjhCm1Jyk1"
+        "nb4k7l5gjhCm1Jyk1" // ✅ Your public key
       )
       .then(
         (result) => {
@@ -57,7 +57,7 @@ const AuthForm = () => {
         "service_e1eul13",
         "template_x4r3vzo",
         form.current,
-        "nb4k7l5gjhCm1Jyk1"
+        "nb4k7l5gjhCm1Jyk1" // ✅ Your public key
       )
       .then(
         (result) => {
@@ -213,7 +213,9 @@ const AuthForm = () => {
                 />
                 <span
                   className="absolute right-2 top-3 text-gray-500 cursor-pointer"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  onClick={() =>
+                    setShowConfirmPassword(!showConfirmPassword)
+                  }
                 >
                   {showConfirmPassword ? (
                     <FiEyeOff size={20} />
